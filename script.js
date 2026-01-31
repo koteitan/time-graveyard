@@ -460,16 +460,55 @@ function generateMap() {
     if (wx < MAP_W - 2) map[wy][wx + 1] = TILE.EMPTY;
   }
 
-  // 時間の断片（墓標）を空いている場所に配置
+  // 深淵（移動をブロックするので先に配置）
+  for (let i = 0; i < 5; i++) {
+    const x = Math.floor(seededRandom(i * 743 + 4000) * (MAP_W - 4)) + 2;
+    const y = Math.floor(seededRandom(i * 857 + 4000) * (MAP_H - 4)) + 2;
+    if (map[y][x] === TILE.EMPTY) {
+      map[y][x] = TILE.ABYSS;
+    }
+  }
+
+  // プレイヤー開始位置から到達可能なタイルを計算（フラッドフィル）
+  const reachable = new Set();
+  const queue = [[centerX, centerY]];
+  reachable.add(`${centerX},${centerY}`);
+
+  while (queue.length > 0) {
+    const [cx, cy] = queue.shift();
+    const dirs = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+    for (const [dx, dy] of dirs) {
+      const nx = cx + dx;
+      const ny = cy + dy;
+      const key = `${nx},${ny}`;
+      if (nx > 0 && nx < MAP_W - 1 && ny > 0 && ny < MAP_H - 1 &&
+          map[ny][nx] !== TILE.WALL && !reachable.has(key)) {
+        reachable.add(key);
+        queue.push([nx, ny]);
+      }
+    }
+  }
+
+  // 到達可能なEMPTYタイルのリストを作成
+  const reachableEmpty = [];
+  for (const key of reachable) {
+    const [x, y] = key.split(',').map(Number);
+    if (map[y][x] === TILE.EMPTY) {
+      reachableEmpty.push({ x, y });
+    }
+  }
+
+  // 時間の断片（墓標）を到達可能な場所にのみ配置
   let placed = 0;
   let attempt = 0;
-  while (placed < daysInYear && attempt < 10000) {
-    const x = Math.floor(seededRandom(attempt * 137 + 5000) * (MAP_W - 2)) + 1;
-    const y = Math.floor(seededRandom(attempt * 251 + 5000) * (MAP_H - 2)) + 1;
+  while (placed < daysInYear && attempt < 10000 && reachableEmpty.length > 0) {
+    const idx = Math.floor(seededRandom(attempt * 137 + 5000) * reachableEmpty.length);
+    const { x, y } = reachableEmpty[idx];
     if (map[y][x] === TILE.EMPTY) {
       map[y][x] = TILE.TIME_FRAGMENT;
       timeFragmentDays[`${x},${y}`] = placed + 1; // 1日目〜365日目
       placed++;
+      reachableEmpty.splice(idx, 1);
     }
     attempt++;
   }
@@ -498,15 +537,6 @@ function generateMap() {
     const y = Math.floor(seededRandom(i * 631 + 3000) * (MAP_H - 2)) + 1;
     if (map[y][x] === TILE.EMPTY) {
       map[y][x] = TILE.CREATURE;
-    }
-  }
-
-  // 深淵（壁に囲まれた場所に配置）
-  for (let i = 0; i < 5; i++) {
-    const x = Math.floor(seededRandom(i * 743 + 4000) * (MAP_W - 4)) + 2;
-    const y = Math.floor(seededRandom(i * 857 + 4000) * (MAP_H - 4)) + 2;
-    if (map[y][x] === TILE.EMPTY) {
-      map[y][x] = TILE.ABYSS;
     }
   }
 
