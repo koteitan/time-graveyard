@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ここ</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="cockpit">
+    <!-- 左パネル -->
+    <div class="panel left-panel">
+      <div class="gauge">
+        <div class="gauge-label">ΔT</div>
+        <div class="gauge-value" id="depth">000</div>
+        <div class="gauge-bar">
+          <div class="gauge-fill" id="depthFill"></div>
+        </div>
+      </div>
+      <div class="gauge">
+        <div class="gauge-value" id="time">00:00:00</div>
+      </div>
+      <div class="gauge">
+        <div class="gauge-label">座標</div>
+        <div class="gauge-value small" id="coords">0, 0</div>
+      </div>
+    </div>
+
+    <!-- 中央：ゲーム画面 -->
+    <div class="viewport-container">
+      <canvas id="game" width="640" height="480"></canvas>
+      <div class="viewport-overlay"></div>
+      <div class="tombstone-popup" id="tombstonePopup"></div>
+      <div class="epitaph" id="epitaph"></div>
+      <div class="ghost-container" id="ghostContainer"></div>
+      <div class="forget-popup" id="forgetPopup">忘</div>
+    </div>
+
+    <!-- 右パネル -->
+    <div class="panel right-panel">
+      <div class="gauge">
+        <div class="gauge-label">Ω</div>
+        <div class="gauge-value" id="year">0000</div>
+      </div>
+      <div class="gauge">
+        <div class="gauge-label">→∅</div>
+        <div class="gauge-value" id="remaining">000</div>
+      </div>
+      <div class="gauge">
+        <div class="gauge-label">発見</div>
+        <div class="gauge-value" id="discovered">0/365</div>
+      </div>
+      <div class="minimap-container">
+        <canvas id="minimap" width="128" height="128"></canvas>
+      </div>
+      <div class="indicator-row">
+        <div class="indicator active" id="ind1"></div>
+        <div class="indicator" id="ind2"></div>
+        <div class="indicator" id="ind3"></div>
+      </div>
+    </div>
+
+    <!-- 下部 -->
+    <div class="status-bar">
+      <span class="status-item" id="status">◈</span>
+      <span class="status-item" id="dateDisplay">0000.00.00</span>
+      <span class="status-item">WASD/矢印で移動</span>
+    </div>
+
+    <!-- スキャンライン -->
+    <div class="scanlines"></div>
+    <div class="frame"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
